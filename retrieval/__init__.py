@@ -6,6 +6,7 @@ Top-level retrieval package exporting loaders and chunkers.
 
 from retrieval.loaders import IngestedCorpusLoader, LoadedDocument, TextBlock
 from retrieval.chunkers import BaseChunker, LegalChunk, LegalChunker, RecursiveChunker
+from retrieval.legal_question_router import LegalQuestionRouter, RoutePlan
 
 __all__ = [
     "IngestedCorpusLoader",
@@ -15,4 +16,6 @@ __all__ = [
     "LegalChunk",
     "LegalChunker",
     "RecursiveChunker",
+    "LegalQuestionRouter",
+    "RoutePlan",
 ]
