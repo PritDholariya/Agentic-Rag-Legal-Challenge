@@ -84,6 +84,13 @@ class TelemetryTimer:
         self._start_time: float = time.perf_counter()
         self._first_token_time: float = 0.0
 
+    def __enter__(self) -> "TelemetryTimer":
+        self._start_time = time.perf_counter()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb) -> None:
+        pass
+
     def mark_token(self) -> None:
         """Mark the arrival timestamp of the first LLM token."""
         if self._first_token_time == 0.0:

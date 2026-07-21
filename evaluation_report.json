@@ -1,0 +1,63 @@
+{
+  "total_questions": 5,
+  "submission_file": "submission.json",
+  "architecture": "Legal Hybrid RAG (BM25 + TF-IDF RRF + Reranker + Deterministic Bypass + Dual-Mode Synthesis)",
+  "sample_answers": [
+    {
+      "question_id": "q_sample_001_date",
+      "answer": "Document ID: 03b621728fe29eb6113fcdb57f6458d793fd2d5c5b833ae26d40f04a29c85359\nDoc Type: case\nClaim Number: CA 005/2025\nClaim Number Normalized: ca 005 2025\nCase Name: LXT Real Estate Broker L.L.C v SIR Real Estate LLC\nClaimant: LXT REAL ESTATE BROKER L.L.C\nDefendants: ['SIR REAL ESTATE LLC']\nIssue Date: 2026-01-13\nJudge: H.E. [Doc: 03b621728fe29eb6113fcdb57f6458d793fd2d5c5b833ae26d40f04a29c85359, Page: 1]",
+      "telemetry": {
+        "timing": {
+          "ttft_ms": 53.98,
+          "tpot_ms": 0.0,
+          "total_time_ms": 53.99
+        },
+        "retrieval": {
+          "retrieved_chunk_pages": [
+            {
+              "doc_id": "03b621728fe29eb6113fcdb57f6458d793fd2d5c5b833ae26d40f04a29c85359",
+              "page_numbers": [
+                1,
+                2,
+                3
+              ]
+            }
+          ]
+        },
+        "usage": {
+          "input_tokens": 126,
+          "output_tokens": 96
+        },
+        "model_name": "local_extractive"
+      }
+    },
+    {
+      "question_id": "q_sample_002_bool",
+      "answer": "[General / Preamble]\n\nCA 005/2025 LXT Real Estate Broker L.L.C v SIR Real Estate LLC\nJANUARY 13, 2026 COURT OF APPEAL - ORDERS\nClaim No: CA 005/2025\nTHE DUBAI INTERNATIONAL FINANCIAL CENTRE COURTS\nIN THE COURT OF APPEAL\nBETWEEN\nLXT REAL ESTATE BROKER L.L.C\nClaimant/Respondent\nand\nSIR REAL ESTATE LLC\nDefendant/Appellant\nORDER OF THE COURT OF APPEAL\nUPON the Court of Appeal Claim Form dated 29 August 2025 (the \u201cClaim\u201d)\nAND UPON the Appellant\u2019s Appeal Notice dated 22 July 2025 in CFI-073-2024 (the \u201cAppeal\u201d)\nAND UPON the Respondent\u2019s application for permission to cross appeal dated 18 September 2025 in\nCA-005-2025 (the \u201cClaimant\u2019s application for permission to cross appeal\u201d)\nAND UPON hearing Counsel for the Appellant and hearing Counsel for the Respondent at the Appeal\nhearing held before H.E. [Doc: 03b621728fe29eb6113fcdb57f6458d793fd2d5c5b833ae26d40f04a29c85359, Page: 1]",
+      "telemetry": {
+        "timing": {
+          "ttft_ms": 3.97,
+          "tpot_ms": 0.0,
+          "total_time_ms": 3.99
+        },
+        "retrieval": {
+          "retrieved_chunk_pages": [
+            {
+              "doc_id": "03b621728fe29eb6113fcdb57f6458d793fd2d5c5b833ae26d40f04a29c85359",
+              "page_numbers": [
+                1,
+                2,
+                3
+              ]
+            }
+          ]
+        },
+        "usage": {
+          "input_tokens": 128,
+          "output_tokens": 264
+        },
+        "model_name": "local_extractive"
+      }
+    }
+  ]
+}
