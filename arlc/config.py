@@ -14,9 +14,9 @@ from dotenv import load_dotenv
 @dataclass
 class EnvConfig:
     """Runtime configuration loaded from environment variables (.env)."""
-    # Evaluation API settings
-    eval_api_key: str
-    eval_base_url: str
+    # Evaluation API settings (Optional if running against remote REST API)
+    eval_api_key: Optional[str]
+    eval_base_url: Optional[str]
 
     # LLM configuration
     openrouter_api_key: Optional[str]
@@ -43,9 +43,11 @@ class EnvConfig:
     mock_llm: bool
     ingest_use_llm: bool
 
-    # File paths
+    # File paths and Local Dataset configuration
     docs_dir: str
+    questions_path: str
     submission_path: str
+    output_report_path: str
     code_archive_path: str
 
     @classmethod
@@ -59,8 +61,8 @@ class EnvConfig:
             return str(val).strip().lower() in ("1", "true", "yes", "y")
 
         return cls(
-            eval_api_key=os.getenv("EVAL_API_KEY", ""),
-            eval_base_url=os.getenv("EVAL_BASE_URL", "https://platform.agentic-challenge.ai/api/v1"),
+            eval_api_key=os.getenv("EVAL_API_KEY") or None,
+            eval_base_url=os.getenv("EVAL_BASE_URL") or None,
             openrouter_api_key=os.getenv("OPENROUTER_API_KEY") or None,
             openai_api_key=os.getenv("OPENAI_API_KEY") or None,
             gemini_api_key=os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY") or None,
@@ -77,7 +79,9 @@ class EnvConfig:
             mock_llm=_as_bool(os.getenv("LEGAL_RAG_SMOKE_MOCK_LLM"), False),
             ingest_use_llm=_as_bool(os.getenv("LEGAL_INGEST_USE_LLM"), True),
             docs_dir=os.getenv("DOCS_DIR", "docs_corpus"),
+            questions_path=os.getenv("QUESTIONS_PATH", "public_dataset/questions.json"),
             submission_path=os.getenv("SUBMISSION_PATH", "submission.json"),
+            output_report_path=os.getenv("OUTPUT_REPORT_PATH", "evaluation_report.json"),
             code_archive_path=os.getenv("CODE_ARCHIVE_PATH", "code_archive.zip"),
         )
 
