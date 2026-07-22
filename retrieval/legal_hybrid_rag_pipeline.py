@@ -44,15 +44,16 @@ class LegalHybridRAGPipeline(BaseLegalPipeline):
         self.documents: List[LoadedDocument] = []
         self.chunks: List[LegalChunk] = []
         self.fact_records: Dict[str, CaseFactRecord] = {}
-        self.openai_client = None
+        self.llm_client = None
+        self.active_model = "local_extractive"
 
-        if self.cfg.openai_api_key and not self.cfg.mock_llm:
+        if not self.cfg.mock_llm:
             try:
-                import openai
-                self.openai_client = openai.OpenAI(api_key=self.cfg.openai_api_key)
-                logger.info("Connected to cloud OpenAI API for synthesis")
+                from ingestion.utils import get_llm_client_and_model
+                self.llm_client, self.active_model = get_llm_client_and_model(self.cfg)
+                logger.info("Connected to cloud LLM provider (%s)", self.active_model)
             except Exception as e:
-                logger.warning("Failed to initialize OpenAI client: %s", e)
+                logger.warning("Failed to initialize cloud LLM client: %s", e)
 
     # -------------------------------------------------------------------------
     # Part 1 (6.3): Metadata Indexing & CaseFactRecord
@@ -100,7 +101,7 @@ class LegalHybridRAGPipeline(BaseLegalPipeline):
                         "query": query,
                         "answer": f"The claim number is {rec.claim_no} [Doc: {rec.doc_id}, Page: 1].",
                         "citations": [{"doc_id": rec.doc_id, "page": 1}],
-                        "metadata": {"route": "deterministic_bypass", "field": "claim_no"},
+                        "metadata": {"route": "deterministic_bypass", "field": "claim_no", "mode": "deterministic_bypass", "chunks_retrieved": 0},
                     }
         if "what date" in q_lower or "when was" in q_lower:
             for doc_id, rec in self.fact_records.items():
@@ -109,7 +110,7 @@ class LegalHybridRAGPipeline(BaseLegalPipeline):
                         "query": query,
                         "answer": f"The order/judgment date is {rec.date} [Doc: {rec.doc_id}, Page: 1].",
                         "citations": [{"doc_id": rec.doc_id, "page": 1}],
-                        "metadata": {"route": "deterministic_bypass", "field": "date"},
+                        "metadata": {"route": "deterministic_bypass", "field": "date", "mode": "deterministic_bypass", "chunks_retrieved": 0},
                     }
         return None
 
@@ -127,12 +128,12 @@ class LegalHybridRAGPipeline(BaseLegalPipeline):
             for page in c.pages:
                 citations.append({"doc_id": c.doc_id, "page": page})
 
-        # Mode A: Cloud LLM (`OpenAI`)
-        if self.openai_client and not self.cfg.mock_llm:
+        # Mode A: Cloud LLM (`OpenAI / Google Gemini / OpenRouter`)
+        if self.llm_client and not self.cfg.mock_llm:
             try:
                 prompt = build_free_text_prompt(query, chunks)
-                response = self.openai_client.chat.completions.create(
-                    model=self.cfg.llm_model if "gpt" in self.cfg.llm_model else "gpt-4o-mini",
+                response = self.llm_client.chat.completions.create(
+                    model=self.active_model,
                     messages=[
                         {"role": "system", "content": LEGAL_SYSTEM_PROMPT},
                         {"role": "user", "content": prompt},
@@ -212,6 +213,6 @@ class LegalHybridRAGPipeline(BaseLegalPipeline):
                 "route": plan.route,
                 "top_score": top_score,
                 "chunks_retrieved": len(top_chunks),
-                "mode": "cloud_llm" if (self.openai_client and not self.cfg.mock_llm) else "local_extractive",
+                "mode": self.active_model if (self.llm_client and not self.cfg.mock_llm) else "local_extractive",
             },
         }

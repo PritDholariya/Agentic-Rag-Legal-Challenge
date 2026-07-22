@@ -65,7 +65,12 @@ def call_llm(
     Execute a chat completion request against the configured LLM provider.
     If json_mode is True, instructs the model to return strict JSON formatting.
     """
-    client, model = get_llm_client_and_model(config)
+    cfg = config or get_config()
+    if cfg.mock_llm:
+        logger.info("mock_llm is True. Returning simulated JSON metadata without network call.")
+        return '{"doc_type": "judgment", "doc_id": "mock_id", "claim_no": "CA 005/2025", "court": "DIFC Courts", "date": "March 15, 2025"}'
+
+    client, model = get_llm_client_and_model(cfg)
 
     messages = []
     if system_prompt:
@@ -76,6 +81,7 @@ def call_llm(
         "model": model,
         "messages": messages,
         "temperature": temperature,
+        "timeout": 15.0,
     }
     if json_mode:
         kwargs["response_format"] = {"type": "json_object"}
